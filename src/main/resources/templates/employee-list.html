@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{header.html}"></div>
+<div class="container mt-5">
+    <h1 class="mb-4">List of User</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <div th:if="${successMessage}" class="alert alert-success">
+        <p th:text="${successMessage}"></p>
+    </div>
+
+    <a href="/employees/new" class="btn btn-success mb-3">Add New Employee</a>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Salary</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td th:text="${employee.id}"></td>
+            <td th:text="${employee.name}"></td>
+            <td th:text="${employee.position}"></td>
+            <td th:text="${employee.salary}"></td>
+            <td>
+                <a href="/employees/edit" th:href="@{/employees/edit/{id}(id=${employee.id})}" class="btn btn-warning">Edit</a>
+                <a href="/employees/delete" th:href="@{/employees/delete/{id}(id=${employee.id})}" class="btn btn-danger">Delete</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function fetchEmployees(keyword = "") {
+            $.get(`/employees/search?keyword=${keyword}`, function (data) {
+                const $tbody = $('#employeeTableBody');
+                $tbody.empty();
+                $tbody.append(data);
+            });
+        }
+
+        $('#searchButton').on('click', function () {
+            const keyword = $('#keyword').val();
+            fetchEmployees(keyword);
+        });
+
+        fetchEmployees();
+    });
+</script>
+</body>
+</html>
